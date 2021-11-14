@@ -1,20 +1,27 @@
-import { Injectable } from '@angular/core';
-import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
-import { Capacitor } from '@capacitor/core';
-import { Directory, Filesystem } from '@capacitor/filesystem';
-import { Storage } from '@capacitor/storage';
-import { Platform } from '@ionic/angular';
-
-
+import { Injectable } from "@angular/core";
+import {
+  Camera,
+  CameraResultType,
+  CameraSource,
+  Photo,
+} from "@capacitor/camera";
+import { Capacitor } from "@capacitor/core";
+import { Directory, Filesystem } from "@capacitor/filesystem";
+import { Storage } from "@capacitor/storage";
+import { ModalController, Platform } from "@ionic/angular";
+import { AddImageComponent } from "../add-image/add-image.component";
 
 @Injectable({
-  providedIn: 'root',
+  providedIn: "root",
 })
 export class PhotoService {
   public photos: UserPhoto[] = [];
-  private PHOTO_STORAGE: string = 'photos';
+  private PHOTO_STORAGE: string = "photos";
 
-  constructor(private platform: Platform) {}
+  constructor(
+    private platform: Platform,
+    private modalController: ModalController
+  ) {}
 
   public async loadSaved() {
     // Retrieve cached photo array data
@@ -22,7 +29,7 @@ export class PhotoService {
     this.photos = JSON.parse(photoList.value) || [];
 
     // If running on the web...
-    if (!this.platform.is('hybrid')) {
+    if (!this.platform.is("hybrid")) {
       // Display the photo by reading into base64 format
       for (let photo of this.photos) {
         // Read each saved photo's data from the Filesystem
@@ -50,12 +57,20 @@ export class PhotoService {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri, // file-based data; provides best performance
+      //resultType: CameraResultType.Base64,
       source: CameraSource.Camera, // automatically take a new photo with the camera
       quality: 100, // highest quality (0 to 100)
     });
-
+    console.log("here is your image", capturedPhoto);
     const savedImageFile = await this.savePicture(capturedPhoto);
-
+    //here call the API and get the authentication token
+    //attach the authentication token to call with your image -- POSTPONED
+    // get your image from the backend
+    //display your modal
+    this.addMyImage();
+    //response of your modal must be stored in your photos array
+    // 1.THIS is the place to put your Modal
+    // then in your Modal
     // Add new photo to Photos array
     this.photos.unshift(savedImageFile);
 
@@ -66,20 +81,35 @@ export class PhotoService {
     });
   }
 
+  async addMyImage() {
+    const Addphotos = await this.modalController.create({
+      component: AddImageComponent,
+      componentProps: {
+        // EditKitchen: this.homeKitchen
+      },
+    });
+    Addphotos.onDidDismiss().then(async (res) => {
+      // await this.loadSvc.presentLoading('Updating your kitchen information...');
+      // await this.ionViewWillEnter();
+      // await this.loadSvc.dismissLoading();
+    });
+    return await Addphotos.present();
+  }
+
   // Save picture to file on device
   private async savePicture(cameraPhoto: Photo) {
     // Convert photo to base64 format, required by Filesystem API to save
     const base64Data = await this.readAsBase64(cameraPhoto);
 
     // Write the file to the data directory
-    const fileName = new Date().getTime() + '.jpeg';
+    const fileName = new Date().getTime() + ".jpeg";
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
       directory: Directory.Data,
     });
 
-    if (this.platform.is('hybrid')) {
+    if (this.platform.is("hybrid")) {
       // Display the new image by rewriting the 'file://' path to HTTP
       // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
@@ -99,7 +129,7 @@ export class PhotoService {
   // Read camera photo into base64 format based on the platform the app is running on
   private async readAsBase64(cameraPhoto: Photo) {
     // "hybrid" will detect Cordova or Capacitor
-    if (this.platform.is('hybrid')) {
+    if (this.platform.is("hybrid")) {
       // Read the file into base64 format
       const file = await Filesystem.readFile({
         path: cameraPhoto.path,
@@ -127,7 +157,7 @@ export class PhotoService {
     });
 
     // delete photo file from filesystem
-    const filename = photo.filepath.substr(photo.filepath.lastIndexOf('/') + 1);
+    const filename = photo.filepath.substr(photo.filepath.lastIndexOf("/") + 1);
     await Filesystem.deleteFile({
       path: filename,
       directory: Directory.Data,
