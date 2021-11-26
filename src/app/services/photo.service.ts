@@ -17,6 +17,7 @@ import { AddImageComponent } from "../add-image/add-image.component";
 export class PhotoService {
   public photos: UserPhoto[] = [];
   private PHOTO_STORAGE: string = "photos";
+  CapturedImage: string;
 
   constructor(
     private platform: Platform,
@@ -45,29 +46,43 @@ export class PhotoService {
   }
 
   /* Use the device camera to take a photo:
-  // https://capacitor.ionicframework.com/docs/apis/camera
+   https://capacitor.ionicframework.com/docs/apis/camera
 
-  // Store the photo data into permanent file storage:
-  // https://capacitor.ionicframework.com/docs/apis/filesystem
+   Store the photo data into permanent file storage:
+   https://capacitor.ionicframework.com/docs/apis/filesystem
 
-  // Store a reference to all photo filepaths using Storage API:
-  // https://capacitor.ionicframework.com/docs/apis/storage
+   Store a reference to all photo filepaths using Storage API:
+   https://capacitor.ionicframework.com/docs/apis/storage
   */
   public async addNewToGallery() {
     // Take a photo
     const capturedPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri, // file-based data; provides best performance
       //resultType: CameraResultType.Base64,
+      allowEditing: true,
       source: CameraSource.Camera, // automatically take a new photo with the camera
       quality: 100, // highest quality (0 to 100)
+      saveToGallery: true,
     });
-    console.log("here is your image", capturedPhoto);
+    if (capturedPhoto) {
+      console.log("here is your image", capturedPhoto); // mine
+      // this.CapturedImage = capturedPhoto.base64String; //mine
+      this.CapturedImage = await this.readAsBase64(capturedPhoto); //mine
+      console.log("here is your image after base64", this.CapturedImage); // mine
+      Storage.set({
+        key: "capturedImage",
+        value: this.CapturedImage,
+      });
+
+      this.addMyImage(); // to open your modal
+    }
+
     const savedImageFile = await this.savePicture(capturedPhoto);
     //here call the API and get the authentication token
     //attach the authentication token to call with your image -- POSTPONED
     // get your image from the backend
     //display your modal
-    this.addMyImage();
+
     //response of your modal must be stored in your photos array
     // 1.THIS is the place to put your Modal
     // then in your Modal

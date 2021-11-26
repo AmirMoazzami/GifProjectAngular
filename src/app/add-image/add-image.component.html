@@ -1,3 +1,97 @@
-<p>
-  add-image works!
-</p>
+<ion-header no-border>
+  <ion-toolbar>
+    <!-- Title -->
+    <ion-title>Share Your Photos!</ion-title>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form #form="ngForm" (ngSubmit)="createPost()">
+    <ion-img [src]="displayImage"></ion-img>
+    <ion-title>Choose Your Emoji!!!</ion-title>
+    <ion-slides pager="true" [options]="slideOptsprofile">
+      <!-- <ion-slide *ngFor="let post of posts"> -->
+      <ion-slide>
+        <!-- <ion-item lines="none" class="ion-padding" (click)="goToProfile()"> -->
+        <!-- <ion-item lines="none" class="ion-padding"> -->
+        <ion-avatar color="danger">
+          <!-- <ion-img *ngIf="post.postImage && post.postImage.length > 0" [src]="post.postImage[0].imageUrl"></ion-img> -->
+          <!-- <ion-img *ngIf="!post.postImage || post.postImage.length < 1"
+              src="../../../assets/images/loading-post.png"></ion-img> -->
+          <ion-img src="../../../assets/images/heart.jpeg"></ion-img>
+        </ion-avatar>
+        <!-- </ion-item> -->
+      </ion-slide>
+      <ion-slide>
+        <!-- <ion-item lines="none" class="ion-padding"> -->
+        <ion-avatar>
+          <ion-img src="../../../assets/images/cry.jpeg"></ion-img>
+        </ion-avatar>
+        <!-- </ion-item> -->
+      </ion-slide>
+      <ion-slide>
+        <!-- <ion-item lines="none" class="ion-padding"> -->
+        <ion-avatar>
+          <ion-img src="../../../assets/images/thong.jpeg"></ion-img>
+        </ion-avatar>
+        <!-- </ion-item> -->
+      </ion-slide>
+    </ion-slides>
+    <ion-button
+      color="danger"
+      size="large"
+      type="submit"
+      [disabled]="form.invalid"
+      expand="block"
+      shape="round"
+      >Post
+    </ion-button>
+  </form>
+  <!-- <img [src]="displayImage" /> -->
+  <!-- <form #form="ngForm" (ngSubmit)="createPost()" >
+  <img [src]='image1' *ngIf="image1 && cameraActivity" />
+
+
+
+  <ion-item>
+    <ion-label position="stacked">Write a caption<ion-text color="danger">*</ion-text>
+    </ion-label>
+    <ion-input name="name" type="text" placeholder="Write your caption..." [(ngModel)]="userPost.caption" required>
+    </ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label>#Tag Your Chef</ion-label>
+    <ion-select [(ngModel)]="userPost.homeKitchenId" name="ChefName" placeholder="HomeKitchen Name" ok-text="Select"
+      cancel-text="Cancel">
+      <ion-select-option *ngIf="user.isChef && myKitchen" value="{{myKitchen.id}}">
+        YOUR KITCHEN : {{myKitchen.homeKitchenName}}
+      </ion-select-option>
+      <ion-select-option *ngFor="let item of userOrders" value="{{item.homeKitchenId}}">
+        {{item.homeKitchen.homeKitchenName}}
+        <ion-avatar slot="end">
+          <img [src]='item.homeKitchen.homeKitchenLogo[0]?.imageUrl'>
+        </ion-avatar>
+      </ion-select-option>
+    </ion-select>
+
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">What's the meal name?
+    </ion-label>
+    <ion-input name="Meal" type="text" placeholder="name of your meal " [(ngModel)]="userPost.mealName">
+    </ion-input>
+  </ion-item>
+  <ion-item>
+    <ion-label position="stacked">What's the mealpackage name?
+    </ion-label>
+    <ion-input name="MealPackage" type="text" placeholder=" name of your mealpackage"
+      [(ngModel)]="userPost.mealPackageName">
+    </ion-input>
+  </ion-item>
+
+
+  <ion-button color='color1' size="large" type="submit" [disabled]="form.invalid" expand="full">Post
+  </ion-button>
+
+</form> -->
+</ion-content>
